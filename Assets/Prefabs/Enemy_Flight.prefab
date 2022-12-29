@@ -110,9 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb8208f8b2016a04eb1c9ae15876a99d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootingForce: 20
-  projectile: {fileID: 8802082633706976233, guid: 5577d80a0150bdf489c7b825e0c01789, type: 3}
-  isAbleToShoot: 0
+  speed: 20
+  explosionEffect: {fileID: 0}
 --- !u!114 &979687856015130798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,3 +125,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zBorder: -10
+  zBorder_forward: 70

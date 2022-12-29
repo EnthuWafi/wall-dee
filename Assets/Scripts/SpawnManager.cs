@@ -25,7 +25,7 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnEnemy", enemySpawnIntervals, enemySpawnIntervals);
         InvokeRepeating("SpawnTrash", spawnIntervals, spawnIntervals);*/
     }
-    
+
     public IEnumerator SpawnPoint()
     {
         while (gameManager.isGameActive)
@@ -38,15 +38,15 @@ public class SpawnManager : MonoBehaviour
             Vector3 spawnPos = spawnPosition[randomPos].position;
             Vector3 offset = Vector3.up * 0.5f;
             //spawning
-            Instantiate(point[randomPowerUp], spawnPos + offset , point[randomPowerUp].transform.rotation);
+            Instantiate(point[randomPowerUp], spawnPos + offset, point[randomPowerUp].transform.rotation);
         }
-       
+
     }
     public IEnumerator SpawnEnemy()
     {
         while (gameManager.isGameActive)
         {
-            yield return new WaitForSeconds(enemySpawnIntervals);  
+            yield return new WaitForSeconds(enemySpawnIntervals);
 
             int randomPos = Random.Range(0, spawnPosition.Count);
             int randomEnemy = Random.Range(0, enemy.Count);

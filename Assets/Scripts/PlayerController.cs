@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -8,21 +8,19 @@ public class PlayerController : MonoBehaviour
 
 
     //enum
-    public enum Lane {LEFT = -1, MIDDLE = 0 ,RIGHT = 1};
-
+    public enum Lane { LEFT = -1, MIDDLE = 0, RIGHT = 1 };
 
     //variables
-    public float slideSpeed  = 5.0f;
+    public float slideSpeed = 5.0f;
     public float jumpHeight = 10.0f;
 
-
+    public AudioClip jumpSFX;
+    public AudioClip shootSFX;
+    public AudioClip deathSFX;
+    public AudioClip pointSFX;
 
     public bool isOnGround;
-
-    private float horizontalInput;
-    private float verticalInput;
     //private
-    private Rigidbody myRigidbody;
     private CharacterController controller;
     private GameManager gameManager;
 
@@ -40,7 +38,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        myRigidbody = GetComponent<Rigidbody>();
         controller = GetComponent<CharacterController>();
 
         currentLane = Lane.MIDDLE;
@@ -54,7 +51,7 @@ public class PlayerController : MonoBehaviour
         if (gameManager.isGameActive)
         {
             PlayerMovement();
-            
+            Shoot();
         }
         //jump
         if (isOnGround && Input.GetKeyDown(KeyCode.W) && gameManager.isGameActive)
@@ -101,12 +98,24 @@ public class PlayerController : MonoBehaviour
         controller.Move(moveVector * Time.deltaTime);
 
     }
-   void LaneMove(bool goingRight) 
+
+    void Shoot()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && gameManager.Point == gameManager.Max_Point)
+        {
+            Instantiate(projectile, transform.position, projectile.transform.rotation);
+            gameManager.PlaySound(shootSFX);
+
+            gameManager.UpdatePoint(Convert.ToInt32(-gameManager.Max_Point));
+            
+        }
+    }
+    void LaneMove(bool goingRight)
     {
         if (goingRight)
         {
             if (currentLane != Lane.RIGHT)
-                currentLane += 1; 
+                currentLane += 1;
         }
         else
         {
@@ -117,22 +126,27 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Jump()
     {
-
+        gameManager.PlaySound(jumpSFX);
         animator.SetBool("Roll_Anim", true);
 
         yield return new WaitForSeconds(0.5f);
-        animator.SetBool("Roll_Anim", false);   
-        
+        animator.SetBool("Roll_Anim", false);
+
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            gameManager.GameOver();
-            animator.SetTrigger("Death");
+            if (gameManager.isGameActive)
+            {
+                gameManager.PlaySound(deathSFX, 2f);
+                
+                gameManager.GameOver();
+                animator.SetTrigger("Death");
 
-            Debug.Log("Game Over!");
+                Debug.Log("Game Over!");
+            }
         }
     }
 
@@ -140,6 +154,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Point"))
         {
+            gameManager.PlaySound(pointSFX, 3f); 
             //increments point
             gameManager.UpdatePoint(1);
             gameManager.UpdateScore(10);

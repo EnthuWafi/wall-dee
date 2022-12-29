@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -10,6 +8,8 @@ public class EnemyController : MonoBehaviour
     private PlayerController player;
     private GameManager gameManager;
 
+    public ParticleSystem explosionEffect;
+    public AudioClip explosionSound;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +20,21 @@ public class EnemyController : MonoBehaviour
     {
         if (gameManager.isGameActive)
         {
-            transform.Translate(speed * Time.deltaTime * Vector3.back);
+            transform.Translate((gameManager.speed + speed) * Time.deltaTime * Vector3.back);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+            ParticleSystem temp = Instantiate(explosionEffect, transform.position, transform.rotation);
+            temp.gameObject.AddComponent<MoveBack>();
+            temp.gameObject.AddComponent<DestroyOutOfBounds>();
+
+            gameManager.UpdateScore(20);
+            gameManager.PlaySound(explosionSound, 2f);
+            gameObject.GetComponentInChildren<BoxCollider>().enabled= false;
         }
     }
 
